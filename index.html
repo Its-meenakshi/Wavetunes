@@ -1,0 +1,102 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WaveTunes</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <h2>🌊 WaveTunes</h2>
+
+        <ul>
+            <li><i class="fa-solid fa-house"></i> Home</li>
+            <li><i class="fa-solid fa-compass"></i> Discover</li>
+            <li><i class="fa-solid fa-music"></i> Library</li>
+            <li><i class="fa-solid fa-heart"></i> Favorites</li>
+            <li><i class="fa-solid fa-list"></i> Playlists</li>
+            <li><i class="fa-solid fa-gear"></i> Settings</li>
+        </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+
+        <!-- Navbar -->
+        <nav class="navbar">
+            <input type="text" placeholder="Search music...">
+
+            <div class="profile">
+                <i class="fa-solid fa-user"></i>
+            </div>
+        </nav>
+
+        <!-- Welcome -->
+        <section class="welcome">
+            <h1>Welcome to WaveTunes 👋</h1>
+            <p>Feel Every Beat.</p>
+        </section>
+
+        <!-- Trending -->
+        <section class="albums">
+            <h2>🔥 Trending Now</h2>
+
+            <div class="album-grid">
+
+                <div class="album-card">
+                    <h3>Ocean Drive</h3>
+                    <p>Synthwave</p>
+                </div>
+
+                <div class="album-card">
+                    <h3>Midnight Rain</h3>
+                    <p>Lo-Fi</p>
+                </div>
+
+                <div class="album-card">
+                    <h3>Electric Dreams</h3>
+                    <p>Pop</p>
+                </div>
+
+                <div class="album-card">
+                    <h3>Sunset Beats</h3>
+                    <p>Chill</p>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Bottom Player -->
+    <footer class="music-player">
+
+        <div class="song-info">
+            🎵 No song playing
+        </div>
+
+        <div class="controls">
+            <button>⏮</button>
+            <button>▶</button>
+            <button>⏭</button>
+        </div>
+
+    </footer>
+
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+
+</body>
+</html>
