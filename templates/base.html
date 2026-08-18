@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}WaveTunes{% endblock %}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="app-shell">
+
+<aside class="sidebar">
+    <a class="logo" href="{{ url_for('home') }}">
+        <svg width="30" height="30" viewBox="0 0 36 36" fill="none">
+            <path d="M6 26C6 26 9 14 18 14C27 14 24 26 30 26" stroke="url(#g1)" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="30" cy="10" r="3" fill="#00E5D4"/>
+            <defs><linearGradient id="g1" x1="6" y1="26" x2="30" y2="14"><stop stop-color="#00E5D4"/><stop offset="1" stop-color="#6C5CE7"/></linearGradient></defs>
+        </svg>
+        <span>WaveTunes</span>
+    </a>
+    <ul class="nav-list">
+        <li><a href="{{ url_for('home') }}" class="{{ 'active' if active_page=='home' }}"><i class="fa-solid fa-house"></i><span>Home</span></a></li>
+        <li><a href="{{ url_for('discover') }}" class="{{ 'active' if active_page=='discover' }}"><i class="fa-solid fa-compass"></i><span>Discover</span></a></li>
+        <li><a href="{{ url_for('library') }}" class="{{ 'active' if active_page=='library' }}"><i class="fa-solid fa-music"></i><span>Library</span></a></li>
+        <li><a href="{{ url_for('favourites') }}" class="{{ 'active' if active_page=='favourites' }}"><i class="fa-solid fa-heart"></i><span>Favourites</span></a></li>
+        <li><a href="{{ url_for('playlists') }}" class="{{ 'active' if active_page=='playlists' }}"><i class="fa-solid fa-list"></i><span>Playlists</span></a></li>
+        <li><a href="{{ url_for('settings') }}" class="{{ 'active' if active_page=='settings' }}"><i class="fa-solid fa-gear"></i><span>Settings</span></a></li>
+    </ul>
+    <div class="sidebar-footer">
+        <a href="{{ url_for('logout') }}"><i class="fa-solid fa-arrow-right-from-bracket"></i><span>Log out</span></a>
+    </div>
+</aside>
+
+<main class="main-content">
+    <nav class="navbar">
+        <div class="search-bar">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" placeholder="Search for songs, albums or artists...">
+        </div>
+        <div class="nav-right">
+            <button class="icon-btn"><i class="fa-solid fa-bell"></i><span class="dot"></span></button>
+            <a class="profile" href="{{ url_for('profile') }}">
+                <div class="avatar">
+                    {% if user.avatar_url %}<img src="{{ user.avatar_url }}" alt="{{ user.username }}">{% else %}{{ user.username[0]|upper }}{% endif %}
+                </div>
+                <div class="greeting"><small id="greetText">Good evening,</small><strong>{{ user.username }}</strong></div>
+                <i class="fa-solid fa-chevron-down"></i>
+            </a>
+        </div>
+    </nav>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, msg in messages %}
+          <div class="flash {{ 'error' if category=='error' else '' }}">{{ msg }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+</main>
+
+<footer class="music-player">
+    <div class="song-info">
+        <div class="mini-cover" id="miniCover"><i class="fa-solid fa-music"></i></div>
+        <div class="song-text"><strong id="songTitle">No song playing</strong><small id="songArtist">Pick a track to get started</small></div>
+    </div>
+    <div class="player-center">
+        <div class="controls">
+            <button id="prevBtn"><i class="fa-solid fa-backward-step"></i></button>
+            <button id="playPauseBtn" class="main-control"><i class="fa-solid fa-play"></i></button>
+            <button id="nextBtn"><i class="fa-solid fa-forward-step"></i></button>
+        </div>
+        <div class="progress-row">
+            <span id="curT">0:00</span>
+            <div class="progress-bar" id="progressBar"><div class="progress-fill" id="progressFill"></div></div>
+            <span id="durT">0:00</span>
+        </div>
+    </div>
+    <div class="volume-row"><i class="fa-solid fa-volume-high"></i><input type="range" id="volumeSlider" min="0" max="100" value="80"></div>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+{% block page_scripts_pre %}{% endblock %}
+<script src="{{ url_for('static', filename='js/player.js') }}"></script>
+{% block page_scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}WaveTunes · Favourites{% endblock %}
+{% block content %}
+
+<div class="page-header">
+    <div>
+        <h1>Favourites</h1>
+        <p id="favCount">{{ tracks|length }} liked songs</p>
+    </div>
+</div>
+
+<div class="track-list" id="trackList"></div>
+<div class="empty-state" id="emptyState" style="display:none;">
+    <i class="fa-solid fa-heart-crack"></i>
+    <p>No favourites yet — tap the heart on any track to save it here.</p>
+</div>
+
+{% endblock %}
+
+{% block page_scripts_pre %}
+<script>
+    window.PAGE_TRACKS = {{ tracks|tojson }};
+</script>
+{% endblock %}
+
+{% block page_scripts %}
+<script>
+(function(){
+    const TRACKS = window.PAGE_TRACKS;
+    const trackListEl = document.getElementById('trackList');
+    const emptyStateEl = document.getElementById('emptyState');
+    const favCountEl = document.getElementById('favCount');
+
+    function fmt(s){ const m=Math.floor(s/60), sec=Math.floor(s%60).toString().padStart(2,'0'); return `${m}:${sec}`; }
+
+    function render(){
+        const liked = TRACKS.map((t,i)=>({...t, idx:i})).filter(t => t.liked);
+        favCountEl.textContent = `${liked.length} liked song${liked.length !== 1 ? 's' : ''}`;
+        emptyStateEl.style.display = liked.length ? 'none' : 'block';
+        trackListEl.style.display = liked.length ? 'flex' : 'none';
+        trackListEl.innerHTML = liked.map((t, pos) => `
+            <div class="track-row" data-track-idx="${t.idx}">
+                <span class="track-index">${pos+1}</span>
+                <i class="fa-solid fa-play row-play"></i>
+                <div class="track-thumb cover-${t.idx % 8}"></div>
+                <div class="track-title"><strong>${t.title}</strong><small>${t.artist}</small></div>
+                <span class="track-genre">${t.genre}</span>
+                <span class="track-duration">${fmt(t.duration)}</span>
+                <button class="track-like liked" data-like="${t.idx}"><i class="fa-solid fa-heart"></i></button>
+            </div>`).join('');
+    }
+
+    document.addEventListener('click', (e) => {
+        const likeBtn = e.target.closest('[data-like]');
+        if (likeBtn){
+            const idx = Number(likeBtn.dataset.like);
+            TRACKS[idx].liked = !TRACKS[idx].liked;
+            e.stopPropagation();
+            render();
+        }
+    });
+
+    render();
+})();
+</script>
+{% endblock %}

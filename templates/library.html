@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+{% block title %}WaveTunes · Library{% endblock %}
+{% block content %}
+
+<div class="page-header">
+    <div>
+        <h1>Your Library</h1>
+        <p id="trackCount">{{ tracks|length }} songs</p>
+    </div>
+    <div class="search-bar" style="max-width:280px;">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" id="librarySearch" placeholder="Search your library...">
+    </div>
+</div>
+
+<div class="lib-controls">
+    <div class="chip-row" id="genreChips">
+        <button class="chip active" data-genre="all">All</button>
+        {% for g in genres %}
+        <button class="chip" data-genre="{{ g }}">{{ g }}</button>
+        {% endfor %}
+    </div>
+    <div class="lib-tools">
+        <select class="sort-select" id="sortSelect">
+            <option value="default">Recently Added</option>
+            <option value="az">Title A–Z</option>
+            <option value="za">Title Z–A</option>
+            <option value="duration">Duration</option>
+            <option value="liked">Liked First</option>
+        </select>
+        <div class="view-toggle">
+            <button id="listViewBtn" class="active"><i class="fa-solid fa-list"></i></button>
+            <button id="gridViewBtn"><i class="fa-solid fa-grip"></i></button>
+        </div>
+    </div>
+</div>
+
+<div class="track-list" id="trackList"></div>
+<div class="album-grid wrap" id="libGrid" style="display:none;"></div>
+<div class="empty-state" id="emptyState" style="display:none;">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <p>No songs match your search or filter.</p>
+</div>
+
+{% endblock %}
+
+{% block page_scripts_pre %}
+<script>
+    window.PAGE_TRACKS = {{ tracks|tojson }};
+</script>
+{% endblock %}
+
+{% block page_scripts %}
+<script>
+(function(){
+    const TRACKS = window.PAGE_TRACKS;
+    let filteredIndices = TRACKS.map((_, i) => i);
+    let currentGenre = "all", searchTerm = "", sortMode = "default", viewMode = "list";
+
+    const trackListEl = document.getElementById('trackList');
+    const libGridEl = document.getElementById('libGrid');
+    const emptyStateEl = document.getElementById('emptyState');
+    const trackCountEl = document.getElementById('trackCount');
+
+    function fmt(s){ const m=Math.floor(s/60), sec=Math.floor(s%60).toString().padStart(2,'0'); return `${m}:${sec}`; }
+
+    function applyFilters(){
+        filteredIndices = TRACKS.map((_, i) => i).filter(i => {
+            const t = TRACKS[i];
+            const matchesGenre = currentGenre === "all" || t.genre === currentGenre;
+            const matchesSearch = t.title.toLowerCase().includes(searchTerm.toLowerCase());
+            return matchesGenre && matchesSearch;
+        });
+        if (sortMode === "az") filteredIndices.sort((a,b) => TRACKS[a].title.localeCompare(TRACKS[b].title));
+        if (sortMode === "za") filteredIndices.sort((a,b) => TRACKS[b].title.localeCompare(TRACKS[a].title));
+        if (sortMode === "duration") filteredIndices.sort((a,b) => TRACKS[a].duration - TRACKS[b].duration);
+        if (sortMode === "liked") filteredIndices.sort((a,b) => (TRACKS[b].liked - TRACKS[a].liked));
+        render();
+    }
+
+    function render(){
+        trackCountEl.textContent = `${filteredIndices.length} song${filteredIndices.length !== 1 ? 's' : ''}`;
+        emptyStateEl.style.display = filteredIndices.length ? 'none' : 'block';
+        trackListEl.style.display = (viewMode === 'list' && filteredIndices.length) ? 'flex' : 'none';
+        libGridEl.style.display = (viewMode === 'grid' && filteredIndices.length) ? 'flex' : 'none';
+
+        if (viewMode === 'list'){
+            trackListEl.innerHTML = filteredIndices.map((i, pos) => {
+                const t = TRACKS[i];
+                return `<div class="track-row" data-track-idx="${i}">
+                    <span class="track-index">${pos+1}</span>
+                    <i class="fa-solid fa-play row-play"></i>
+                    <div class="track-thumb cover-${i % 8}"></div>
+                    <div class="track-title"><strong>${t.title}</strong><small>${t.artist}</small></div>
+                    <span class="track-genre">${t.genre}</span>
+                    <span class="track-duration">${fmt(t.duration)}</span>
+                    <button class="track-like ${t.liked ? 'liked' : ''}" data-like="${i}"><i class="fa-solid fa-heart"></i></button>
+                </div>`;
+            }).join('');
+        } else {
+            libGridEl.innerHTML = filteredIndices.map(i => {
+                const t = TRACKS[i];
+                return `<div class="album-card" data-track-idx="${i}">
+                    <div class="art cover-${i % 8}"></div>
+                    <button class="card-fav ${t.liked ? 'liked' : ''}" data-like="${i}"><i class="fa-solid fa-heart"></i></button>
+                    <div class="play-button"><i class="fa-solid fa-play"></i></div>
+                    <h3>${t.title}</h3><p>${t.genre}</p>
+                </div>`;
+            }).join('');
+        }
+    }
+
+    document.addEventListener('click', (e) => {
+        const likeBtn = e.target.closest('[data-like]');
+        if (likeBtn){
+            const idx = Number(likeBtn.dataset.like);
+            TRACKS[idx].liked = !TRACKS[idx].liked;
+            e.stopPropagation();
+            render();
+        }
+    });
+
+    document.getElementById('genreChips').addEventListener('click', (e) => {
+        const chip = e.target.closest('.chip');
+        if (!chip) return;
+        document.querySelectorAll('#genreChips .chip').forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        currentGenre = chip.dataset.genre;
+        applyFilters();
+    });
+    document.getElementById('librarySearch').addEventListener('input', (e) => { searchTerm = e.target.value; applyFilters(); });
+    document.getElementById('sortSelect').addEventListener('change', (e) => { sortMode = e.target.value; applyFilters(); });
+    document.getElementById('listViewBtn').addEventListener('click', () => { viewMode='list'; document.getElementById('listViewBtn').classList.add('active'); document.getElementById('gridViewBtn').classList.remove('active'); render(); });
+    document.getElementById('gridViewBtn').addEventListener('click', () => { viewMode='grid'; document.getElementById('gridViewBtn').classList.add('active'); document.getElementById('listViewBtn').classList.remove('active'); render(); });
+
+    applyFilters();
+})();
+</script>
+{% endblock %}

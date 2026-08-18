@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ 'Sign In' if mode=='signin' else 'Sign Up' }} · WaveTunes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+<div class="auth-page">
+    <section class="auth-visual">
+        <div class="glow-orb"></div>
+        <div class="glow-orb2"></div>
+        <div class="auth-visual-content">
+            <div class="logo">
+                <svg width="34" height="34" viewBox="0 0 36 36" fill="none">
+                    <path d="M6 26C6 26 9 14 18 14C27 14 24 26 30 26" stroke="url(#g1)" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>
+                    <circle cx="30" cy="10" r="3" fill="#00E5D4"/>
+                    <defs><linearGradient id="g1" x1="6" y1="26" x2="30" y2="14"><stop stop-color="#00E5D4"/><stop offset="1" stop-color="#6C5CE7"/></linearGradient></defs>
+                </svg>
+                <span style="font-size:1.3rem;font-weight:800;letter-spacing:-.02em;margin-left:10px;">WaveTunes</span>
+            </div>
+            <svg width="100%" height="140" viewBox="0 0 400 140" style="margin-bottom:20px;">
+                <defs><linearGradient id="wg" x1="0" y1="1" x2="1" y2="0">
+                    <stop offset="0%" stop-color="#00E5D4"/><stop offset="100%" stop-color="#6C5CE7"/>
+                </linearGradient></defs>
+                <path class="wave-path" d="M10 100 C 80 100, 90 20, 200 20 S 320 100, 390 40" stroke="url(#wg)" stroke-width="4" fill="none"/>
+            </svg>
+            <h2>Every mood has a soundtrack.</h2>
+            <p>Stream thousands of songs, build playlists that move with you, and pick up right where you left off — on any device.</p>
+        </div>
+    </section>
+
+    <section class="auth-panel">
+        <div class="auth-box">
+            <div class="auth-tabs">
+                <a href="{{ url_for('signin') }}" class="{{ 'active' if mode=='signin' }}">Sign In</a>
+                <a href="{{ url_for('signup') }}" class="{{ 'active' if mode=='signup' }}">Sign Up</a>
+            </div>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+              {% if messages %}
+                {% for category, msg in messages %}
+                  <div class="flash {{ 'error' if category=='error' else '' }}">{{ msg }}</div>
+                {% endfor %}
+              {% endif %}
+            {% endwith %}
+
+            {% if mode == 'signin' %}
+            <h1>Welcome back</h1>
+            <p class="auth-sub">Sign in to keep the music going.</p>
+            <form method="POST" action="{{ url_for('signin') }}">
+                <div class="field field-icon">
+                    <label for="email">Email</label>
+                    <i class="fa-solid fa-envelope"></i>
+                    <input type="email" id="email" name="email" placeholder="you@example.com" required>
+                </div>
+                <div class="field field-icon">
+                    <label for="password">Password</label>
+                    <i class="fa-solid fa-lock"></i>
+                    <input type="password" id="password" name="password" placeholder="••••••••" required>
+                </div>
+                <div class="checkbox-row">
+                    <input type="checkbox" id="remember" name="remember">
+                    <label for="remember">Keep me signed in on this device</label>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Sign In</button>
+            </form>
+            <p class="auth-foot">New to WaveTunes? <a href="{{ url_for('signup') }}">Create an account</a></p>
+            {% else %}
+            <h1>Create your account</h1>
+            <p class="auth-sub">Join WaveTunes and start listening in seconds.</p>
+            <form method="POST" action="{{ url_for('signup') }}">
+                <div class="field field-icon">
+                    <label for="username">Username</label>
+                    <i class="fa-solid fa-user"></i>
+                    <input type="text" id="username" name="username" placeholder="yourname" required>
+                </div>
+                <div class="field field-icon">
+                    <label for="email">Email</label>
+                    <i class="fa-solid fa-envelope"></i>
+                    <input type="email" id="email" name="email" placeholder="you@example.com" required>
+                </div>
+                <div class="field-row">
+                    <div class="field field-icon">
+                        <label for="password">Password</label>
+                        <i class="fa-solid fa-lock"></i>
+                        <input type="password" id="password" name="password" placeholder="••••••••" required>
+                    </div>
+                    <div class="field field-icon">
+                        <label for="confirm">Confirm</label>
+                        <i class="fa-solid fa-lock"></i>
+                        <input type="password" id="confirm" name="confirm" placeholder="••••••••" required>
+                    </div>
+                </div>
+                <div class="checkbox-row">
+                    <input type="checkbox" id="terms" name="terms" required>
+                    <label for="terms">I agree to the Terms and Privacy Policy</label>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Create Account</button>
+            </form>
+            <p class="auth-foot">Already have an account? <a href="{{ url_for('signin') }}">Sign in</a></p>
+            {% endif %}
+        </div>
+    </section>
+</div>
+</body>
+</html>
