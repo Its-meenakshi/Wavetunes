@@ -34,11 +34,13 @@ def seed_demo_user():
 seed_demo_user()
 
 # ---------------------------------------------------------------------------
-# Tracks, moods, playlists (unchanged)
+# Tracks, moods, playlists
 # ---------------------------------------------------------------------------
 MASTER_TRACKS = [
     {"title": "Ocean Drive", "artist": "Nova Reyes", "genre": "Synthwave", "duration": 198, "liked": True, "cover": 0},
-    # ... keep the rest of your tracks here ...
+    {"title": "Midnight Rain", "artist": "Kilo Sound", "genre": "Lo-Fi", "duration": 224, "liked": False, "cover": 1},
+    {"title": "Electric Dreams", "artist": "Parker Vale", "genre": "Pop", "duration": 176, "liked": True, "cover": 2},
+    # ... keep all your tracks here ...
 ]
 
 def track_copy(indices):
@@ -55,14 +57,18 @@ def build_playlists():
     return [
         {"name": "Late Night Drives", "icon": "fa-car", "track_count": 5, "duration_label": "19 min",
          "track_indices": [0, 5, 13, 1, 6]},
-        # ... keep the rest of your playlists here ...
+        {"name": "Deep Focus Mix", "icon": "fa-brain", "track_count": 3, "duration_label": "13 min",
+         "track_indices": [11, 6, 10]},
+        {"name": "Weekend Feels", "icon": "fa-sun", "track_count": 4, "duration_label": "14 min",
+         "track_indices": [2, 7, 12, 3]},
+        {"name": "Rainy Day", "icon": "fa-cloud-rain", "track_count": 4, "duration_label": "16 min",
+         "track_indices": [3, 8, 15, 4]},
     ]
 
 # ---------------------------------------------------------------------------
 # Auth helpers
 # ---------------------------------------------------------------------------
 def login_required(view):
-    from functools import wraps
     @wraps(view)
     def wrapped(*args, **kwargs):
         if "user_email" not in session:
@@ -82,7 +88,92 @@ def inject_user():
 # ---------------------------------------------------------------------------
 # Routes (signin, signup, logout, home, discover, library, favourites, playlists, settings, profile)
 # ---------------------------------------------------------------------------
-# ... keep all your existing route definitions here ...
+@app.route("/")
+def root():
+    if "user_email" in session:
+        return redirect(url_for("home"))
+    return redirect(url_for("signin"))
+
+@app.route("/signin", methods=["GET", "POST"])
+def signin():
+    # ... keep your signin logic ...
+    return render_template("auth.html", mode="signin")
+
+@app.route("/signup", methods=["GET", "POST"])
+def signup():
+    # ... keep your signup logic ...
+    return render_template("auth.html", mode="signup")
+
+@app.route("/logout")
+def logout():
+    session.pop("user_email", None)
+    flash("You've been signed out.", "success")
+    return redirect(url_for("signin"))
+
+@app.route("/home")
+@login_required
+def home():
+    return render_template(
+        "index.html",
+        active_page="home",
+        trending=track_copy([0, 1, 2, 3, 4, 5]),
+        made_for_you=track_copy([6, 7, 8, 9]),
+    )
+
+@app.route("/discover")
+@login_required
+def discover():
+    return render_template(
+        "discover.html",
+        active_page="discover",
+        new_releases=track_copy([12, 13, 14, 15]),
+        recommended=track_copy([0, 2, 5, 7, 10, 11]),
+        moods=MOODS,
+    )
+
+@app.route("/library")
+@login_required
+def library():
+    tracks = track_copy(range(len(MASTER_TRACKS)))
+    genres = sorted({t["genre"] for t in tracks})
+    return render_template(
+        "library.html",
+        active_page="library",
+        tracks=tracks,
+        genres=genres,
+    )
+
+@app.route("/favourites")
+@login_required
+def favourites():
+    tracks = track_copy(range(len(MASTER_TRACKS)))
+    return render_template(
+        "favourites.html",
+        active_page="favourites",
+        tracks=tracks,
+    )
+
+@app.route("/playlists")
+@login_required
+def playlists():
+    tracks = track_copy(range(len(MASTER_TRACKS)))
+    return render_template(
+        "playlists.html",
+        active_page="playlists",
+        tracks=tracks,
+        playlists=build_playlists(),
+    )
+
+@app.route("/settings")
+@login_required
+def settings():
+    return render_template("settings.html", active_page="settings")
+
+@app.route("/profile", methods=["GET", "POST"])
+@login_required
+def profile():
+    # ... keep your profile logic ...
+    return render_template("profile.html", active_page="profile")
 
 # ---------------------------------------------------------------------------
 # Run app (Render fix)
