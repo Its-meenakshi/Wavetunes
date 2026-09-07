@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}WaveTunes · Home{% endblock %}
+{% block content %}
+
+<section class="hero" style="position:relative;min-height:340px;border-radius:26px;overflow:hidden;display:flex;align-items:center;padding:56px;margin-bottom:40px;background:linear-gradient(115deg,#0C0E11 0%,#12151A 50%,#151920 100%);border:1px solid var(--border);">
+    <div style="position:absolute;top:15%;right:8%;width:320px;height:320px;background:radial-gradient(circle,rgba(0,229,212,.28),transparent 70%);border-radius:50%;filter:blur(10px);pointer-events:none;"></div>
+    <div style="position:relative;z-index:2;max-width:540px;">
+        <span style="font-size:12.5px;font-weight:700;letter-spacing:.12em;color:var(--teal);text-transform:uppercase;">Good Evening, {{ user.username }}</span>
+        <h1 style="font-size:44px;font-weight:800;line-height:1.12;letter-spacing:-.02em;margin:18px 0 16px;">Ready for your next wave?</h1>
+        <p style="color:var(--muted);font-size:16px;line-height:1.7;margin-bottom:30px;max-width:420px;font-weight:500;">Dive into thousands of songs, discover new artists, and create playlists that match every mood.</p>
+        <div style="display:flex;gap:14px;">
+            <button class="btn btn-primary" id="heroPlayBtn"><i class="fa-solid fa-play"></i> Explore Music</button>
+            <button class="btn btn-ghost" id="shuffleBtn"><i class="fa-solid fa-shuffle"></i> Shuffle Play</button>
+        </div>
+    </div>
+</section>
+
+<section>
+    <div class="section-head">
+        <h2>🔥 Trending Now</h2>
+        <a href="{{ url_for('library') }}" class="view-all">View All <i class="fa-solid fa-chevron-right"></i></a>
+    </div>
+    <div class="album-grid" id="albumGrid">
+        {% for t in trending %}
+        <div class="album-card" data-track-idx="{{ loop.index0 }}">
+            <div class="art cover-{{ loop.index0 % 8 }}"><i class="fa-solid fa-music"></i></div>
+            <div class="play-button"><i class="fa-solid fa-play"></i></div>
+            <h3>{{ t.title }}</h3><p>{{ t.artist }}</p>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<section style="margin-top:36px;">
+    <div class="section-head">
+        <h2>Made For You</h2>
+        <a href="{{ url_for('discover') }}" class="view-all">Discover More <i class="fa-solid fa-chevron-right"></i></a>
+    </div>
+    <div class="album-grid">
+        {% for t in made_for_you %}
+        <div class="album-card" data-track-idx="{{ trending|length + loop.index0 }}">
+            <div class="art cover-{{ (loop.index0 + 3) % 8 }}"><i class="fa-solid fa-headphones"></i></div>
+            <div class="play-button"><i class="fa-solid fa-play"></i></div>
+            <h3>{{ t.title }}</h3><p>{{ t.artist }}</p>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+{% endblock %}
+
+{% block page_scripts_pre %}
+<script>
+    window.PAGE_TRACKS = {{ (trending + made_for_you)|tojson }};
+</script>
+{% endblock %}
+
+{% block page_scripts %}
+<script>
+    document.getElementById('heroPlayBtn').addEventListener('click', () => WaveTunesPlayer.loadTrack(0, true));
+    document.getElementById('shuffleBtn').addEventListener('click', () => WaveTunesPlayer.loadTrack(Math.floor(Math.random()*window.PAGE_TRACKS.length), true));
+</script>
+{% endblock %}

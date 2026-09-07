@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+{% block title %}WaveTunes · Settings{% endblock %}
+{% block content %}
+
+<div class="page-header">
+    <div>
+        <h1>Settings</h1>
+        <p>Manage how WaveTunes looks and notifies you</p>
+    </div>
+</div>
+
+<div class="form-card">
+    <h2>Appearance</h2>
+    <p class="form-sub">Choose the theme that suits your vibe.</p>
+    <div class="theme-options">
+        <div class="theme-swatch dark active" data-theme="dark" title="Dark (default)"></div>
+        <div class="theme-swatch midnight" data-theme="midnight" title="Midnight Violet"></div>
+        <div class="theme-swatch sunset" data-theme="sunset" title="Sunset Rose"></div>
+    </div>
+</div>
+
+<div class="form-card">
+    <h2>Notifications</h2>
+    <p class="form-sub">Choose what WaveTunes lets you know about.</p>
+    <div class="settings-row">
+        <div><strong>New releases</strong><p>Get notified when artists you follow drop new music</p></div>
+        <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+    </div>
+    <div class="settings-row">
+        <div><strong>Playlist updates</strong><p>Alerts when a shared playlist changes</p></div>
+        <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+    </div>
+    <div class="settings-row">
+        <div><strong>Recommendations</strong><p>Weekly picks based on your listening</p></div>
+        <label class="switch"><input type="checkbox"><span class="slider"></span></label>
+    </div>
+    <div class="settings-row">
+        <div><strong>Email digest</strong><p>A monthly summary sent to your inbox</p></div>
+        <label class="switch"><input type="checkbox"><span class="slider"></span></label>
+    </div>
+</div>
+
+<div class="form-card">
+    <h2>Playback</h2>
+    <p class="form-sub">Fine-tune how music plays.</p>
+    <div class="settings-row">
+        <div><strong>Autoplay</strong><p>Keep similar music playing when your queue ends</p></div>
+        <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+    </div>
+    <div class="settings-row">
+        <div><strong>Normalize volume</strong><p>Keep consistent volume across tracks</p></div>
+        <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+    </div>
+    <div class="field" style="margin-top:16px;">
+        <label for="quality">Streaming quality</label>
+        <select id="quality">
+            <option>Low (data saver)</option>
+            <option selected>Normal</option>
+            <option>High</option>
+            <option>Lossless</option>
+        </select>
+    </div>
+</div>
+
+<div class="form-card">
+    <h2>Account Preferences</h2>
+    <p class="form-sub">Language and privacy.</p>
+    <div class="field">
+        <label for="language">Language</label>
+        <select id="language">
+            <option>English</option>
+            <option>Hindi</option>
+            <option>Spanish</option>
+            <option>French</option>
+        </select>
+    </div>
+    <div class="settings-row">
+        <div><strong>Private session</strong><p>Hide your activity from followers</p></div>
+        <label class="switch"><input type="checkbox"><span class="slider"></span></label>
+    </div>
+    <div class="form-actions" style="margin-top:20px;">
+        <button class="btn btn-primary" id="saveSettingsBtn">Save Changes</button>
+        <a href="{{ url_for('profile') }}" class="btn btn-ghost">Edit Profile Instead</a>
+    </div>
+</div>
+
+<div class="form-card">
+    <h2 style="color:var(--pink);">Danger Zone</h2>
+    <p class="form-sub">These actions are permanent.</p>
+    <div class="form-actions">
+        <button class="btn btn-danger">Deactivate Account</button>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block page_scripts %}
+<script>
+document.querySelectorAll('.theme-swatch').forEach(sw => {
+    sw.addEventListener('click', () => {
+        document.querySelectorAll('.theme-swatch').forEach(s => s.classList.remove('active'));
+        sw.classList.add('active');
+    });
+});
+document.getElementById('saveSettingsBtn').addEventListener('click', () => {
+    const btn = document.getElementById('saveSettingsBtn');
+    const original = btn.textContent;
+    btn.textContent = 'Saved ✓';
+    setTimeout(() => { btn.textContent = original; }, 1800);
+});
+</script>
+{% endblock %}

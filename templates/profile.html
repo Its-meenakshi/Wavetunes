@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block title %}WaveTunes · Profile{% endblock %}
+{% block content %}
+
+<div class="page-header">
+    <div>
+        <h1>Profile</h1>
+        <p>Manage your account details</p>
+    </div>
+</div>
+
+<div class="form-card">
+    <h2>Profile Picture</h2>
+    <p class="form-sub">This is shown across WaveTunes wherever your account appears.</p>
+    <div class="avatar-edit">
+        <div class="avatar-big" id="avatarPreview">
+            {% if user.avatar_url %}<img src="{{ user.avatar_url }}" alt="{{ user.username }}">{% else %}{{ user.username[0]|upper }}{% endif %}
+        </div>
+        <div class="avatar-edit-actions">
+            <form method="POST" action="{{ url_for('profile') }}" enctype="multipart/form-data" id="avatarForm">
+                <input type="file" name="avatar" id="avatarInput" accept="image/*" style="display:none;">
+                <button type="button" class="btn btn-ghost" id="uploadBtn"><i class="fa-solid fa-camera"></i> Upload New Photo</button>
+            </form>
+            <small>PNG or JPG, at least 200×200px.</small>
+        </div>
+    </div>
+</div>
+
+<div class="form-card">
+    <h2>Personal Details</h2>
+    <p class="form-sub">Update your username and email address.</p>
+    <form method="POST" action="{{ url_for('profile') }}">
+        <input type="hidden" name="form_name" value="details">
+        <div class="field">
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" value="{{ user.username }}" required>
+        </div>
+        <div class="field">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" value="{{ user.email }}" required>
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Save Details</button>
+        </div>
+    </form>
+</div>
+
+<div class="form-card">
+    <h2>Change Password</h2>
+    <p class="form-sub">Choose a strong password you don't use elsewhere.</p>
+    <form method="POST" action="{{ url_for('profile') }}">
+        <input type="hidden" name="form_name" value="password">
+        <div class="field">
+            <label for="current_password">Current Password</label>
+            <input type="password" id="current_password" name="current_password" placeholder="••••••••" required>
+        </div>
+        <div class="field-row">
+            <div class="field">
+                <label for="new_password">New Password</label>
+                <input type="password" id="new_password" name="new_password" placeholder="••••••••" required>
+            </div>
+            <div class="field">
+                <label for="confirm_password">Confirm Password</label>
+                <input type="password" id="confirm_password" name="confirm_password" placeholder="••••••••" required>
+            </div>
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Update Password</button>
+        </div>
+    </form>
+</div>
+
+{% endblock %}
+
+{% block page_scripts %}
+<script>
+document.getElementById('uploadBtn').addEventListener('click', () => document.getElementById('avatarInput').click());
+document.getElementById('avatarInput').addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+        document.getElementById('avatarPreview').innerHTML = `<img src="${ev.target.result}" alt="preview">`;
+    };
+    reader.readAsDataURL(file);
+    document.getElementById('avatarForm').submit();
+});
+</script>
+{% endblock %}

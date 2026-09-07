@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block title %}WaveTunes · Playlists{% endblock %}
+{% block content %}
+
+<div class="page-header">
+    <div>
+        <h1>Playlists</h1>
+        <p>{{ playlists|length }} playlists · {{ tracks|length }} tracks total</p>
+    </div>
+</div>
+
+<button class="new-playlist-btn" id="newPlaylistBtn"><i class="fa-solid fa-plus"></i> Create New Playlist</button>
+
+<div style="height:20px;"></div>
+
+{% for p in playlists %}
+<div class="playlist-banner" data-playlist="{{ loop.index0 }}">
+    <div class="playlist-cover cover-{{ loop.index0 % 8 }}"><i class="fa-solid {{ p.icon }}"></i></div>
+    <div class="playlist-info">
+        <strong>{{ p.name }}</strong>
+        <span>{{ p.track_count }} songs · {{ p.duration_label }}</span>
+    </div>
+</div>
+{% endfor %}
+
+<section style="margin-top:36px;">
+    <div class="section-head"><h2 id="activePlaylistName">{{ playlists[0].name if playlists else '' }}</h2></div>
+    <div class="track-list" id="trackList"></div>
+</section>
+
+{% endblock %}
+
+{% block page_scripts_pre %}
+<script>
+    window.PAGE_TRACKS = {{ tracks|tojson }};
+    window.PLAYLISTS = {{ playlists|tojson }};
+</script>
+{% endblock %}
+
+{% block page_scripts %}
+<script>
+(function(){
+    const TRACKS = window.PAGE_TRACKS;
+    const PLAYLISTS = window.PLAYLISTS;
+    const trackListEl = document.getElementById('trackList');
+    const nameEl = document.getElementById('activePlaylistName');
+
+    function fmt(s){ const m=Math.floor(s/60), sec=Math.floor(s%60).toString().padStart(2,'0'); return `${m}:${sec}`; }
+
+    function renderPlaylist(idx){
+        const p = PLAYLISTS[idx];
+        if (!p) return;
+        nameEl.textContent = p.name;
+        trackListEl.innerHTML = p.track_indices.map((i, pos) => {
+            const t = TRACKS[i];
+            return `<div class="track-row" data-track-idx="${i}">
+                <span class="track-index">${pos+1}</span>
+                <i class="fa-solid fa-play row-play"></i>
+                <div class="track-thumb cover-${i % 8}"></div>
+                <div class="track-title"><strong>${t.title}</strong><small>${t.artist}</small></div>
+                <span class="track-genre">${t.genre}</span>
+                <span class="track-duration">${fmt(t.duration)}</span>
+                <button class="track-like ${t.liked ? 'liked' : ''}" data-like="${i}"><i class="fa-solid fa-heart"></i></button>
+            </div>`;
+        }).join('');
+    }
+
+    document.querySelectorAll('[data-playlist]').forEach(el => {
+        el.addEventListener('click', () => renderPlaylist(Number(el.dataset.playlist)));
+    });
+    document.addEventListener('click', (e) => {
+        const likeBtn = e.target.closest('[data-like]');
+        if (likeBtn){
+            const idx = Number(likeBtn.dataset.like);
+            TRACKS[idx].liked = !TRACKS[idx].liked;
+            e.stopPropagation();
+        }
+    });
+    document.getElementById('newPlaylistBtn').addEventListener('click', () => {
+        const name = prompt('Name your new playlist:');
+        if (name) alert(`"${name}" created! (Demo only — hook this up to your backend to persist it.)`);
+    });
+
+    if (PLAYLISTS.length) renderPlaylist(0);
+})();
+</script>
+{% endblock %}

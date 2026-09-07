@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}WaveTunes · Discover{% endblock %}
+{% block content %}
+
+<div class="page-header">
+    <div>
+        <h1>Discover</h1>
+        <p>Fresh picks based on what you've been playing</p>
+    </div>
+</div>
+
+<section>
+    <div class="section-head">
+        <h2>New Releases</h2>
+        <span class="view-all">Updated weekly</span>
+    </div>
+    <div class="album-grid">
+        {% for t in new_releases %}
+        <div class="album-card" data-track-idx="{{ loop.index0 }}">
+            <div class="art cover-{{ loop.index0 % 8 }}"><i class="fa-solid fa-music"></i></div>
+            <span class="card-badge">New</span>
+            <div class="play-button"><i class="fa-solid fa-play"></i></div>
+            <h3>{{ t.title }}</h3><p>{{ t.artist }}</p>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<section style="margin-top:36px;">
+    <div class="section-head">
+        <h2>Recommended For You</h2>
+        <span class="view-all">Based on your taste</span>
+    </div>
+    <div class="album-grid wrap">
+        {% for t in recommended %}
+        <div class="album-card" data-track-idx="{{ new_releases|length + loop.index0 }}">
+            <div class="art cover-{{ (loop.index0 + 2) % 8 }}"><i class="fa-solid fa-star"></i></div>
+            <div class="play-button"><i class="fa-solid fa-play"></i></div>
+            <h3>{{ t.title }}</h3><p>{{ t.artist }}</p>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<section style="margin-top:36px;">
+    <div class="section-head">
+        <h2>Browse by Mood</h2>
+    </div>
+    <div class="album-grid wrap">
+        {% for m in moods %}
+        <div class="album-card" style="cursor:default;">
+            <div class="art cover-{{ loop.index0 % 8 }}" style="display:flex;align-items:center;justify-content:center;">
+                <i class="fa-solid {{ m.icon }}" style="font-size:2rem;color:rgba(255,255,255,.85);"></i>
+            </div>
+            <h3>{{ m.name }}</h3><p>{{ m.count }} tracks</p>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+{% endblock %}
+
+{% block page_scripts_pre %}
+<script>
+    window.PAGE_TRACKS = {{ (new_releases + recommended)|tojson }};
+</script>
+{% endblock %}
