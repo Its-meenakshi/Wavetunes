@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 import os
 import uuid
 from functools import wraps
@@ -295,7 +295,6 @@ def profile():
 
 if __name__ == "__main__":
     app.run(debug=True)
-=======
 from flask import Flask, render_template
 
 app = Flask(__name__)
@@ -306,4 +305,4 @@ def home():
 
 if __name__ == "__main__":
     app.run(debug=True)
->>>>>>> 6c6aa3e247a699e01abb82cac74eaeb345fcbfdb
+
