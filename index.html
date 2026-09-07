@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -21,14 +20,13 @@
     <!-- Sidebar -->
     <aside class="sidebar">
         <h2>🌊 WaveTunes</h2>
-
         <ul>
-            <li><i class="fa-solid fa-house"></i> Home</li>
-            <li><i class="fa-solid fa-compass"></i> Discover</li>
-            <li><i class="fa-solid fa-music"></i> Library</li>
-            <li><i class="fa-solid fa-heart"></i> Favorites</li>
-            <li><i class="fa-solid fa-list"></i> Playlists</li>
-            <li><i class="fa-solid fa-gear"></i> Settings</li>
+            <li><a href="{{ url_for('home') }}"><i class="fa-solid fa-house"></i> Home</a></li>
+            <li><a href="{{ url_for('discover') }}"><i class="fa-solid fa-compass"></i> Discover</a></li>
+            <li><a href="{{ url_for('library') }}"><i class="fa-solid fa-music"></i> Library</a></li>
+            <li><a href="{{ url_for('favourites') }}"><i class="fa-solid fa-heart"></i> Favorites</a></li>
+            <li><a href="{{ url_for('playlists') }}"><i class="fa-solid fa-list"></i> Playlists</a></li>
+            <li><a href="{{ url_for('settings') }}"><i class="fa-solid fa-gear"></i> Settings</a></li>
         </ul>
     </aside>
 
@@ -38,9 +36,11 @@
         <!-- Navbar -->
         <nav class="navbar">
             <input type="text" placeholder="Search music...">
-
             <div class="profile">
                 <i class="fa-solid fa-user"></i>
+                {% if user %}
+                    <span>{{ user.username }}</span>
+                {% endif %}
             </div>
         </nav>
 
@@ -53,29 +53,26 @@
         <!-- Trending -->
         <section class="albums">
             <h2>🔥 Trending Now</h2>
-
             <div class="album-grid">
-
+                {% for track in trending %}
                 <div class="album-card">
-                    <h3>Ocean Drive</h3>
-                    <p>Synthwave</p>
+                    <h3>{{ track.title }}</h3>
+                    <p>{{ track.genre }}</p>
                 </div>
+                {% endfor %}
+            </div>
+        </section>
 
+        <!-- Made For You -->
+        <section class="albums">
+            <h2>🎧 Made For You</h2>
+            <div class="album-grid">
+                {% for track in made_for_you %}
                 <div class="album-card">
-                    <h3>Midnight Rain</h3>
-                    <p>Lo-Fi</p>
+                    <h3>{{ track.title }}</h3>
+                    <p>{{ track.genre }}</p>
                 </div>
-
-                <div class="album-card">
-                    <h3>Electric Dreams</h3>
-                    <p>Pop</p>
-                </div>
-
-                <div class="album-card">
-                    <h3>Sunset Beats</h3>
-                    <p>Chill</p>
-                </div>
-
+                {% endfor %}
             </div>
         </section>
 
@@ -83,17 +80,14 @@
 
     <!-- Bottom Player -->
     <footer class="music-player">
-
         <div class="song-info">
             🎵 No song playing
         </div>
-
         <div class="controls">
             <button>⏮</button>
             <button>▶</button>
             <button>⏭</button>
         </div>
-
     </footer>
 
 <script src="{{ url_for('static', filename='js/script.js') }}"></script>
