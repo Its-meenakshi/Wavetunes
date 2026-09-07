@@ -1,6 +1,3 @@
-Flask>=3.0
-Werkzeug>=3.0
-<<<<<<< HEAD
-gunicorn>=22.0
-=======
->>>>>>> af79101c5343f36a290b03b38af6b3e519f9840b
+   Flask>=3.0
+   Werkzeug>=3.0
+   gunicorn>=22.0
