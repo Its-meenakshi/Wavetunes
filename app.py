@@ -11,29 +11,18 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
-<<<<<<< HEAD
 app.secret_key = os.environ.get("SECRET_KEY", "dev-secret-key-change-me")
-=======
-app.secret_key = "dev-secret-key-change-me"  # replace with a real secret in production
->>>>>>> af79101c5343f36a290b03b38af6b3e519f9840b
 
 AVATAR_DIR = os.path.join(app.static_folder, "images", "avatars")
 os.makedirs(AVATAR_DIR, exist_ok=True)
 ALLOWED_AVATAR_EXT = {"png", "jpg", "jpeg", "gif", "webp"}
 
 # ---------------------------------------------------------------------------
-<<<<<<< HEAD
 # In-memory "database" -- swap this for a real DB (SQLAlchemy, etc.) later.
 # ---------------------------------------------------------------------------
 USERS = {}  # email -> {username, email, password_hash, avatar_url}
 
 
-=======
-# In-memory "database"
-# ---------------------------------------------------------------------------
-USERS = {}  # email -> {username, email, password_hash, avatar_url}
-
->>>>>>> af79101c5343f36a290b03b38af6b3e519f9840b
 def seed_demo_user():
     if "demo@wavetunes.app" not in USERS:
         USERS["demo@wavetunes.app"] = {
@@ -43,22 +32,13 @@ def seed_demo_user():
             "avatar_url": None,
         }
 
-<<<<<<< HEAD
 
 seed_demo_user()
 
-=======
-seed_demo_user()
-
-# ---------------------------------------------------------------------------
-# Tracks, moods, playlists
-# ---------------------------------------------------------------------------
->>>>>>> af79101c5343f36a290b03b38af6b3e519f9840b
 MASTER_TRACKS = [
     {"title": "Ocean Drive", "artist": "Nova Reyes", "genre": "Synthwave", "duration": 198, "liked": True, "cover": 0},
     {"title": "Midnight Rain", "artist": "Kilo Sound", "genre": "Lo-Fi", "duration": 224, "liked": False, "cover": 1},
     {"title": "Electric Dreams", "artist": "Parker Vale", "genre": "Pop", "duration": 176, "liked": True, "cover": 2},
-<<<<<<< HEAD
     {"title": "Rainy Evenings", "artist": "Soft Static", "genre": "Romantic", "duration": 210, "liked": False, "cover": 3},
     {"title": "Echoes of You", "artist": "Unfinished Chapters", "genre": "Indie", "duration": 189, "liked": True, "cover": 4},
     {"title": "Neon Horizon", "artist": "Nova Reyes", "genre": "Synthwave", "duration": 242, "liked": False, "cover": 5},
@@ -80,14 +60,6 @@ def track_copy(indices):
     return [dict(MASTER_TRACKS[i]) for i in indices]
 
 
-=======
-    # ... keep all your tracks here ...
-]
-
-def track_copy(indices):
-    return [dict(MASTER_TRACKS[i]) for i in indices]
-
->>>>>>> af79101c5343f36a290b03b38af6b3e519f9840b
 MOODS = [
     {"name": "Chill Vibes", "icon": "fa-cloud", "count": 42},
     {"name": "Workout", "icon": "fa-dumbbell", "count": 65},
@@ -95,10 +67,7 @@ MOODS = [
     {"name": "Party", "icon": "fa-champagne-glasses", "count": 51},
 ]
 
-<<<<<<< HEAD
 
-=======
->>>>>>> af79101c5343f36a290b03b38af6b3e519f9840b
 def build_playlists():
     return [
         {"name": "Late Night Drives", "icon": "fa-car", "track_count": 5, "duration_label": "19 min",
@@ -111,10 +80,7 @@ def build_playlists():
          "track_indices": [3, 8, 15, 4]},
     ]
 
-<<<<<<< HEAD
 
-=======
->>>>>>> af79101c5343f36a290b03b38af6b3e519f9840b
 # ---------------------------------------------------------------------------
 # Auth helpers
 # ---------------------------------------------------------------------------
@@ -127,30 +93,19 @@ def login_required(view):
         return view(*args, **kwargs)
     return wrapped
 
-<<<<<<< HEAD
 
-=======
->>>>>>> af79101c5343f36a290b03b38af6b3e519f9840b
 def current_user():
     email = session.get("user_email")
     return USERS.get(email)
 
-<<<<<<< HEAD
 
-=======
->>>>>>> af79101c5343f36a290b03b38af6b3e519f9840b
 @app.context_processor
 def inject_user():
     return {"user": current_user()}
 
-<<<<<<< HEAD
 
 # ---------------------------------------------------------------------------
 # Auth routes
-=======
-# ---------------------------------------------------------------------------
-# Routes (signin, signup, logout, home, discover, library, favourites, playlists, settings, profile)
->>>>>>> af79101c5343f36a290b03b38af6b3e519f9840b
 # ---------------------------------------------------------------------------
 @app.route("/")
 def root():
@@ -158,7 +113,6 @@ def root():
         return redirect(url_for("home"))
     return redirect(url_for("signin"))
 
-<<<<<<< HEAD
 
 @app.route("/signin", methods=["GET", "POST"])
 def signin():
@@ -205,31 +159,16 @@ def signup():
     return render_template("auth.html", mode="signup")
 
 
-=======
-@app.route("/signin", methods=["GET", "POST"])
-def signin():
-    # ... keep your signin logic ...
-    return render_template("auth.html", mode="signin")
-
-@app.route("/signup", methods=["GET", "POST"])
-def signup():
-    # ... keep your signup logic ...
-    return render_template("auth.html", mode="signup")
-
->>>>>>> af79101c5343f36a290b03b38af6b3e519f9840b
 @app.route("/logout")
 def logout():
     session.pop("user_email", None)
     flash("You've been signed out.", "success")
     return redirect(url_for("signin"))
 
-<<<<<<< HEAD
 
 # ---------------------------------------------------------------------------
 # App routes
 # ---------------------------------------------------------------------------
-=======
->>>>>>> af79101c5343f36a290b03b38af6b3e519f9840b
 @app.route("/home")
 @login_required
 def home():
@@ -240,10 +179,7 @@ def home():
         made_for_you=track_copy([6, 7, 8, 9]),
     )
 
-<<<<<<< HEAD
 
-=======
->>>>>>> af79101c5343f36a290b03b38af6b3e519f9840b
 @app.route("/discover")
 @login_required
 def discover():
@@ -255,10 +191,7 @@ def discover():
         moods=MOODS,
     )
 
-<<<<<<< HEAD
 
-=======
->>>>>>> af79101c5343f36a290b03b38af6b3e519f9840b
 @app.route("/library")
 @login_required
 def library():
@@ -271,10 +204,7 @@ def library():
         genres=genres,
     )
 
-<<<<<<< HEAD
 
-=======
->>>>>>> af79101c5343f36a290b03b38af6b3e519f9840b
 @app.route("/favourites")
 @login_required
 def favourites():
@@ -285,10 +215,7 @@ def favourites():
         tracks=tracks,
     )
 
-<<<<<<< HEAD
 
-=======
->>>>>>> af79101c5343f36a290b03b38af6b3e519f9840b
 @app.route("/playlists")
 @login_required
 def playlists():
@@ -300,16 +227,12 @@ def playlists():
         playlists=build_playlists(),
     )
 
-<<<<<<< HEAD
 
-=======
->>>>>>> af79101c5343f36a290b03b38af6b3e519f9840b
 @app.route("/settings")
 @login_required
 def settings():
     return render_template("settings.html", active_page="settings")
 
-<<<<<<< HEAD
 
 @app.route("/profile", methods=["GET", "POST"])
 @login_required
@@ -375,17 +298,3 @@ if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     debug = os.environ.get("FLASK_DEBUG", "false").lower() == "true"
     app.run(host="0.0.0.0", port=port, debug=debug)
-=======
-@app.route("/profile", methods=["GET", "POST"])
-@login_required
-def profile():
-    # ... keep your profile logic ...
-    return render_template("profile.html", active_page="profile")
-
-# ---------------------------------------------------------------------------
-# Run app (Render fix)
-# ---------------------------------------------------------------------------
-if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port, debug=True)
->>>>>>> af79101c5343f36a290b03b38af6b3e519f9840b
