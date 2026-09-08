@@ -71,9 +71,7 @@ python app.py
 
 Visit **http://127.0.0.1:5000** — you'll land on the sign-in page.
 
-**Demo login:**
-- Email: `demo@wavetunes.app`
-- Password: `password123`
+
 
 Or just create a new account from the Sign Up tab.
 
